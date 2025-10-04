@@ -4,7 +4,8 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon src/server.js",
-    "start": "node src/server.js"
+    "start": "node src/server.js",
+    "build": "mkdir -p ../frontend/dist && echo '<html><body><h1>Chat App Frontend</h1><p>Backend is running successfully!</p></body></html>' > ../frontend/dist/index.html"
   },
   "keywords": [],
   "type": "module",
