@@ -1,6 +1,7 @@
 import express from "express";
 import cookieParser from "cookie-parser";
 import path from "path";
+import fs from "fs";
 import cors from "cors";
 
 import authRoutes from "./routes/auth.route.js";
@@ -20,13 +21,18 @@ app.use(cookieParser());
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 // make ready for deployment
-/*if (ENV.NODE_ENV === "production") {
-    app.use(express.static(path.join(__dirname, "../frontend/dist")));
+const frontendDist = path.join(process.cwd(), "frontend", "dist");
 
-    app.get("*", (_, res) => {
-        res.sendFile(path.join(__dirname, "../frontend", "dist", "index.html"));
+if (fs.existsSync(frontendDist)) {
+    app.use(express.static(frontendDist));
+    // serve frontend for any non-API route
+    app.get("*", (req, res) => {
+        res.sendFile(path.join(frontendDist, "index.html"));
     });
-}*/
+} else {
+    // simple API-only root to avoid "Cannot GET /"
+    app.get("/", (req, res) => res.send("API is running. Frontend not built/deployed."));
+}
 
 server.listen(PORT, () => {
     console.log("Server running on port: " + PORT);
