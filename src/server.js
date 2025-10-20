@@ -21,7 +21,12 @@ app.use((req, res, next) => {
     next();
 });
 
-// health check
+// root responds OK so Render health probe to "/" doesn't return 404
+app.get("/", (_req, res) => {
+    res.status(200).json({ ok: true, service: "chat-backend", time: Date.now() });
+});
+
+// health check (keeps existing /health)
 app.get("/health", (_req, res) => res.json({ ok: true, time: Date.now() }));
 
 const clientOrigins = [
