@@ -15,6 +15,15 @@ const PORT = ENV.PORT || 3000;
 
 app.use(express.json({ limit: "5mb" })); // req.body
 
+// simple request logger to see incoming requests in logs
+app.use((req, res, next) => {
+    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url} Origin:${req.headers.origin || "none"}`);
+    next();
+});
+
+// health check
+app.get("/health", (_req, res) => res.json({ ok: true, time: Date.now() }));
+
 const clientOrigins = [
     ENV.CLIENT_URL || "https://chat-app-sigma-smoky.vercel.app",
     "http://localhost:5173"
@@ -22,7 +31,6 @@ const clientOrigins = [
 
 app.use(cors({
     origin: (origin, callback) => {
-        // allow non-browser requests (no origin) like Postman/server-to-server
         if (!origin) return callback(null, true);
         if (clientOrigins.includes(origin)) return callback(null, true);
         callback(new Error("CORS policy: origin not allowed"));
